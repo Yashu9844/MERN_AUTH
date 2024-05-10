@@ -2,8 +2,10 @@ import React from 'react'
 
 const Signin = () => {
   return (
-    <div>
-      SignIn
+    <div className='text-3xl'>
+  <div className="">
+    hello
+  </div>
     </div>
   )
 }
