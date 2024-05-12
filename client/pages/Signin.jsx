@@ -11,7 +11,7 @@ const Signin = () => {
   const dispatch = useDispatch()
   const [formData ,setFormData] = useState({})
  const {loading,error} = useSelector((state)=>state.user)
-const navigate = useNavigate()
+  const navigate = useNavigate()
 
 
 
