@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { useRef, useState, useEffect } from 'react';
 import {
   getDownloadURL,
@@ -7,14 +7,14 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../src/firebase.js';
-
+import { updateFailure,updateStart,updateSuccess } from '../src/redux/user/userSlice.js';
 export default function Profile() {
   const fileRef = useRef(null);
   const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
-
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     if (image) {
@@ -43,10 +43,37 @@ export default function Profile() {
       }
     );
   };
+
+const handleChange = (e)=>{
+  setFormData({...formData, [e.target.id]:e.target.value})
+}
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    dispatch(updateStart());
+    const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (data.success === false) {
+      dispatch(updateFailure(data.message));
+      return;
+    }
+    dispatch(updateSuccess(data));
+  
+  } catch (error) {
+    dispatch(updateFailure(error.message));
+  }
+};
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form className='flex flex-col gap-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
           type='file'
           ref={fileRef}
@@ -65,6 +92,7 @@ export default function Profile() {
           alt='profile'
           className='h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2'
           onClick={() => fileRef.current.click()}
+     
         />
         <p className='text-sm self-center'>
           {imageError ? (
@@ -83,6 +111,8 @@ export default function Profile() {
           id='username'
           placeholder='Username'
           className='bg-slate-100 rounded-lg p-3'
+
+          onChange={handleChange}
         />
         <input
           defaultValue={currentUser.email}
@@ -90,12 +120,14 @@ export default function Profile() {
           id='email'
           placeholder='Email'
           className='bg-slate-100 rounded-lg p-3'
+          onChange={handleChange}
         />
         <input
           type='password'
           id='password'
           placeholder='Password'
           className='bg-slate-100 rounded-lg p-3'
+          onChange={handleChange}
         />
         <button>Update</button>
        
