@@ -3,9 +3,11 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import userRouters from './routers/user.route.js'
 import authRouters from './routers/auth.route.js'
+import cookieParser from 'cookie-parser'
 dotenv.config()
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 mongoose.connect(process.env.MONGO).then(()=>{
     console.log("Connected to database")
 }).catch((err)=>{
