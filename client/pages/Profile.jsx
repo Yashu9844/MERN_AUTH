@@ -7,7 +7,7 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../src/firebase.js';
-import { updateFailure,updateStart,updateSuccess ,deleteFailure,deleteSuccess,deleteStart} from '../src/redux/user/userSlice.js';
+import { updateFailure,updateStart,updateSuccess ,deleteFailure,deleteSuccess,deleteStart,signOut} from '../src/redux/user/userSlice.js';
 export default function Profile() {
   const fileRef = useRef(null);
   const [image, setImage] = useState(undefined);
@@ -92,6 +92,21 @@ const handleDelete = async (e) => {
   }
 }
 
+const handleSignOut = async (e)=>{
+  try {
+    fetch('/api/auth/signout');
+    dispatch(signOut());
+    
+  } catch (error) {
+    
+  }
+}
+
+
+
+
+
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -157,7 +172,7 @@ const handleDelete = async (e) => {
       
       <div className='flex justify-between mt-5'>
         <span className='text-red-700 cursor-pointer ' onClick={handleDelete}>Delete Account</span>
-        <span className='text-red-700 cursor-pointer'>Sign out</span>
+        <span className='text-red-700 cursor-pointer' onClick={handleSignOut}>Sign out</span>
       </div>
     </div>
   );
